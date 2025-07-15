@@ -1,4 +1,3 @@
-
 // Configuración de Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCmO4qQwfyJmobpQrQjEYjfqFMnEOSKGb0",
@@ -35,12 +34,13 @@ function logout() {
   auth.signOut();
 }
 
+// Autenticación
 auth.onAuthStateChanged(user => {
   if (user) {
     document.getElementById("login-section").style.display = "none";
     document.getElementById("reserva-section").style.display = "block";
     document.getElementById("user-info").innerText = `Usuario: ${user.email}`;
-
+    console.log("UID del usuario:", user.uid);
     mostrarReservas(user.uid);
   } else {
     document.getElementById("login-section").style.display = "block";
@@ -48,23 +48,22 @@ auth.onAuthStateChanged(user => {
   }
 });
 
+// Función para registrar una reserva
 function reservar() {
   const fechaInput = document.getElementById("fecha");
   const horaInput = document.getElementById("hora");
   const labInput = document.getElementById("laboratorio");
   const user = auth.currentUser;
 
-  // Validar si la fecha es anterior a la actual
   const fechaActual = new Date();
   const fechaSeleccionada = new Date(fechaInput.value);
 
   if (fechaSeleccionada <= fechaActual) {
     alert("No se pueden hacer reservas en fechas anteriores a la actual.");
-    limpiarCampos(); // Limpiar campos si la fecha es inválida
+    limpiarCampos();
     return;
   }
 
-  // Validar si ya existe una reserva duplicada
   db.collection("reservas")
     .where("uid", "==", user.uid)
     .where("fecha", "==", fechaInput.value)
@@ -74,11 +73,10 @@ function reservar() {
     .then((querySnapshot) => {
       if (!querySnapshot.empty) {
         alert("Ya tienes una reserva en esta fecha y hora para este laboratorio.");
-        limpiarCampos(); // Limpiar campos si hay una reserva duplicada
+        limpiarCampos();
         return;
       }
 
-      // Si no hay reservas duplicadas, proceder a agregar la nueva reserva
       db.collection("reservas").add({
         uid: user.uid,
         email: user.email,
@@ -88,38 +86,27 @@ function reservar() {
       }).then(() => {
         alert("Reservación registrada");
         mostrarReservas(user.uid);
-        limpiarCampos(); // Limpiar campos después de registrar
+        limpiarCampos();
       });
     }).catch((error) => {
       console.error("Error al verificar reservas: ", error);
       alert("Ocurrió un error al verificar las reservas.");
-      limpiarCampos(); // Limpiar campos en caso de error
+      limpiarCampos();
     });
 }
 
-// Función para limpiar los campos de entrada
+// Limpiar campos
 function limpiarCampos() {
   document.getElementById("fecha").value = "";
   document.getElementById("hora").value = "";
-  document.getElementById("laboratorio").value = "";
+  document.getElementById("laboratorio").selectedIndex = 0;
 }
 
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("reserva-section").style.display = "block";
-    document.getElementById("user-info").innerText = `Usuario: ${user.email}`;
-    console.log("UID del usuario:", user.uid); // Verifica el UID
-    mostrarReservas(user.uid); // Llama a la función para mostrar reservas
-  } else {
-    document.getElementById("login-section").style.display = "block";
-    document.getElementById("reserva-section").style.display = "none";
-  }
-});
+// Mostrar reservas en tabla
 function mostrarReservas(uid) {
   console.log("Mostrando reservas para UID:", uid);
   const tabla = document.querySelector("#tabla-reservas tbody");
-  tabla.innerHTML = ""; // Limpiar contenido anterior
+  tabla.innerHTML = "";
 
   db.collection("reservas")
     .where("uid", "==", uid)
@@ -142,6 +129,3 @@ function mostrarReservas(uid) {
       console.error("Error al mostrar reservas: ", error);
     });
 }
-
-
-

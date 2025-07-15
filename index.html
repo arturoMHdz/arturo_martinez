@@ -23,7 +23,15 @@
     <p id="user-info"></p>
     <input type="date" id="fecha">
     <input type="time" id="hora">
-    <input type="text" id="laboratorio" placeholder="Laboratorio (Ej. Lab 3)">
+    <select id="laboratorio">
+      <option value="" disabled selected>Selecciona un laboratorio</option>
+      <option value="Lab 1">Laboratorio 1</option>
+      <option value="Lab 2">Laboratorio 2</option>
+      <option value="Lab 3">Laboratorio 3</option>
+      <option value="Lab 4">Laboratorio 4</option>
+      <option value="Lab 5">Laboratorio 5</option>
+      <option value="Lab 6">Laboratorio 6</option>
+    </select>
     <button onclick="reservar()">Reservar</button>
 
     <h3>Mis Reservas:</h3>
