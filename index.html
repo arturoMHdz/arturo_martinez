@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>Reservación de Laboratorios</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+</head>
+<body>
+  <h1>Reservación de Laboratorios</h1>
+
+  <div id="login-section">
+    <input type="email" id="email" placeholder="Correo">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Iniciar sesión</button>
+    <button onclick="register()">Registrarse</button>
+  </div>
+
+  <div id="reserva-section" style="display: none;">
+    <p id="user-info"></p>
+    <input type="date" id="fecha">
+    <input type="time" id="hora">
+    <input type="text" id="laboratorio" placeholder="Laboratorio (Ej. Lab 3)">
+    <button onclick="reservar()">Reservar</button>
+
+    <h3>Mis Reservas:</h3>
+    <table id="tabla-reservas">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Laboratorio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Las reservas se insertarán aquí desde app.js -->
+      </tbody>
+    </table>
+
+    <button onclick="logout()">Cerrar sesión</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

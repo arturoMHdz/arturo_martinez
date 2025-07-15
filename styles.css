@@ -1,0 +1,71 @@
+/* Fondo general */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #2e2b2b; /* Marrón oscuro / café */
+  color: #ffffff; /* Blanco para el texto */
+}
+
+/* Encabezado principal */
+h1 {
+  text-align: center;
+  color: #d2b48c; /* Marrón claro / tono beige */
+}
+
+/* Secciones */
+#login-section, #reserva-section {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #3b2f2f; /* Café oscuro */
+  border-radius: 10px;
+  box-shadow: 0 0 10px #000;
+}
+
+/* Inputs y botones */
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="time"],
+input[type="text"],
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+/* Campos de entrada */
+input {
+  background-color: #fff; /* Blanco */
+  color: #000; /* Negro */
+}
+
+/* Botones */
+button {
+  background-color: #6b4c3b; /* Marrón medio */
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #8b5e3c; /* Marrón más claro al pasar el cursor */
+}
+
+/* Lista de reservas */
+#lista-reservas {
+  list-style: none;
+  padding-left: 0;
+}
+
+#lista-reservas li {
+  background-color: #4a3c3c; /* Marrón oscuro */
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
