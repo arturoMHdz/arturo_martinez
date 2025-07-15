@@ -55,6 +55,13 @@ function reservar() {
   const labInput = document.getElementById("laboratorio");
   const user = auth.currentUser;
 
+  // Validar campos vacíos
+  if (!fechaInput.value || !horaInput.value || !labInput.value) {
+    alert("Por favor, completa todos los campos: fecha, hora y laboratorio.");
+    return;
+  }
+
+  // Validar si la fecha es anterior a la actual
   const fechaActual = new Date();
   const fechaSeleccionada = new Date(fechaInput.value);
 
@@ -64,6 +71,7 @@ function reservar() {
     return;
   }
 
+  // Verificar si ya existe una reserva duplicada
   db.collection("reservas")
     .where("uid", "==", user.uid)
     .where("fecha", "==", fechaInput.value)
@@ -77,6 +85,7 @@ function reservar() {
         return;
       }
 
+      // Registrar la nueva reserva
       db.collection("reservas").add({
         uid: user.uid,
         email: user.email,
@@ -88,12 +97,14 @@ function reservar() {
         mostrarReservas(user.uid);
         limpiarCampos();
       });
-    }).catch((error) => {
+    })
+    .catch((error) => {
       console.error("Error al verificar reservas: ", error);
       alert("Ocurrió un error al verificar las reservas.");
       limpiarCampos();
     });
 }
+
 
 // Limpiar campos
 function limpiarCampos() {
