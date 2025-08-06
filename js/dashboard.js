@@ -4,7 +4,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function agregarEstudiante() {
-  const nombre = document.getElementById("nombre").value;
+  const nombre = document.getElementById("Nombre").value;
   const correo = document.getElementById("correo_electronico").value;
   const clase = document.getElementById("clase").value;
 
