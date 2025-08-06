@@ -45,7 +45,7 @@ async function cargarEstudiantes() {
   lista.innerHTML = "";
   data.forEach((est) => {
     const item = document.createElement("li");
-    item.textContent = `${est.nombre} (${est.clase})`; // Corrección aquí
+    item.textContent = `${est.Nombre} (${est.clase})`; // Corrección aquí
     lista.appendChild(item);
   });
 }
