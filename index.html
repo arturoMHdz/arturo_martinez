@@ -1,56 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <title>Reservación de Laboratorios</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-</head>
+  <meta charset="UTF-8" />
+  <title>Mi Clase en la Nube - Login</title>
+  <link rel="stylesheet" href="styles.css" />
+ </head>
 <body>
-  <h1>Reservación de Laboratorios</h1>
+  <h1>Bienvenida a Mi Clase en la Nube</h1>
 
-  <div id="login-section">
-    <input type="email" id="email" placeholder="Correo">
-    <input type="password" id="password" placeholder="Contraseña">
-    <button onclick="login()">Iniciar sesión</button>
-    <button onclick="register()">Registrarse</button>
+  <div id="auth-container">
+  
+    <div id="login-form">
+      <h2>Iniciar Sesión</h2>
+      <input type="email" id="email" placeholder="Correo" />
+      <input type="password" id="password" placeholder="Contraseña" />
+      <button onclick="login()">Entrar</button>
+      <p>¿No tienes cuenta? <a href="#" onclick="toggleForms()">Regístrate aquí</a></p>
+    </div>
+
+    <div id="register-form" style="display:none;">
+      <h2>Registrarse</h2>
+      <input type="email" id="reg-email" placeholder="Correo" />
+      <input type="password" id="reg-password" placeholder="Contraseña" />
+      <button onclick="register()">Crear cuenta</button>
+      <p>¿Ya tienes cuenta? <a href="#" onclick="toggleForms()">Inicia sesión aquí</a></p>
+    </div>
   </div>
-
-  <div id="reserva-section" style="display: none;">
-    <p id="user-info"></p>
-    <input type="date" id="fecha">
-    <input type="time" id="hora">
-    <select id="laboratorio">
-      <option value="" disabled selected>Selecciona un laboratorio</option>
-      <option value="Lab 1">Laboratorio 1</option>
-      <option value="Lab 2">Laboratorio 2</option>
-      <option value="Lab 3">Laboratorio 3</option>
-      <option value="Lab 4">Laboratorio 4</option>
-      <option value="Lab 5">Laboratorio 5</option>
-      <option value="Lab 6">Laboratorio 6</option>
-    </select>
-    <button onclick="reservar()">Reservar</button>
-
-    <h3>Mis Reservas:</h3>
-    <table id="tabla-reservas">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora</th>
-          <th>Laboratorio</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Las reservas se insertarán aquí desde app.js -->
-      </tbody>
-    </table>
-
-    <button onclick="logout()">Cerrar sesión</button>
-  </div>
-
-  <script src="app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
 </body>
 </html>

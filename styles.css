@@ -1,71 +1,80 @@
-/* Fondo general */
 body {
+  background-color: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #2e2b2b; /* Marrón oscuro / café */
-  color: #ffffff; /* Blanco para el texto */
 }
 
-/* Encabezado principal */
-h1 {
-  text-align: center;
-  color: #d2b48c; /* Marrón claro / tono beige */
-}
-
-/* Secciones */
-#login-section, #reserva-section {
-  max-width: 400px;
-  margin: 40px auto;
-  padding: 20px;
-  background-color: #3b2f2f; /* Café oscuro */
-  border-radius: 10px;
-  box-shadow: 0 0 10px #000;
-}
-
-/* Inputs y botones */
-input[type="email"],
-input[type="password"],
-input[type="date"],
-input[type="time"],
-input[type="text"],
-button {
-  display: block;
+.contenedor {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
   width: 100%;
-  padding: 10px;
-  margin-top: 10px;
+  max-width: 600px;
+}
+
+h1, h2 {
+  color: #333;
+  margin-top: 20px;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 15px;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
 }
 
-/* Campos de entrada */
-input {
-  background-color: #fff; /* Blanco */
-  color: #000; /* Negro */
+input, select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
-/* Botones */
 button {
-  background-color: #6b4c3b; /* Marrón medio */
-  color: #fff;
+  padding: 10px 15px;
+  background-color: #1f8ef1;
+  color: white;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 button:hover {
-  background-color: #8b5e3c; /* Marrón más claro al pasar el cursor */
+  background-color: #0c71c3;
 }
 
-/* Lista de reservas */
-#lista-reservas {
+.cerrar-btn {
+  background-color: #e74c3c;
+  display: block;
+  width: 30%;
+}
+
+.cerrar:hover {
+  background-color: #c0392b;
+}
+
+ul {
   list-style: none;
   padding-left: 0;
 }
 
-#lista-reservas li {
-  background-color: #4a3c3c; /* Marrón oscuro */
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
+ul li {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #f3f3f3;
+  border-radius: 6px;
+}
+
+img {
+  display: block;
+  margin-top: 5px;
+  border-radius: 6px;
 }
