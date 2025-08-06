@@ -5,7 +5,7 @@ const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function agregarEstudiante() {
   const nombre = document.getElementById("nombre").value;
-  const correo = document.getElementById("correo").value;
+  const correo = document.getElementById("correo_electronico").value;
   const clase = document.getElementById("clase").value;
 
   const { data: { user }, error: userError } = await client.auth.getUser();
