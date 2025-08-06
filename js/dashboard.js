@@ -4,7 +4,7 @@ const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 async function agregarEstudiante() {
-  const nombre = document.getElementById("Nombre").value;
+  const nombre = document.getElementById("nombre").value;
   const correo = document.getElementById("correo").value;
   const clase = document.getElementById("clase").value;
 
@@ -45,7 +45,7 @@ async function cargarEstudiantes() {
   lista.innerHTML = "";
   data.forEach((est) => {
     const item = document.createElement("li");
-    item.textContent = `${est.Nombre} (${est.clase})`; // Corrección aquí
+    item.textContent = `${est.nombre} (${est.clase})`; // Corrección aquí
     lista.appendChild(item);
   });
 }
