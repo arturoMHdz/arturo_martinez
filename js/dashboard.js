@@ -45,12 +45,33 @@ async function cargarEstudiantes() {
   lista.innerHTML = "";
   data.forEach((est) => {
     const item = document.createElement("li");
-    item.textContent = `${est.nombre} (${est.clase})`; // Corrección aquí
+    item.textContent = `${est.nombre} (${est.clase})`;
+
+    // Botón de actualizar
+    const btnActualizar = document.createElement("button");
+    btnActualizar.textContent = "Actualizar";
+    btnActualizar.onclick = () => seleccionarEstudiante(est);
+    item.appendChild(btnActualizar);
+
+    // Botón de eliminar
+    const btnEliminar = document.createElement("button");
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.onclick = () => eliminarEstudiante(est.id);
+    item.appendChild(btnEliminar);
+
     lista.appendChild(item);
   });
 }
 
-cargarEstudiantes();
+async function eliminarEstudiante(id) {
+  const { error } = await client.from("estudiantes").delete().eq("id", id);
+  if (error) {
+    alert("Error al eliminar: " + error.message);
+  } else {
+    alert("Estudiante eliminado");
+    cargarEstudiantes();
+  }
+}
 
 async function subirArchivo() {
   const archivoInput = document.getElementById("archivo");
@@ -68,7 +89,7 @@ async function subirArchivo() {
     return;
   }
 
-  const nombreRuta = `${user.id}/${archivo.name}`; // Corrección aquí
+  const nombreRuta = `${user.id}/${archivo.name}`;
   const { data, error } = await client.storage
     .from("tareas")
     .upload(nombreRuta, archivo, {
@@ -94,7 +115,7 @@ async function listarArchivos() {
 
   const { data, error } = await client.storage
     .from("tareas")
-    .list(user.id, { limit: 20 }); // Corrección aquí
+    .list(user.id, { limit: 20 });
 
   const lista = document.getElementById("lista-archivos");
   lista.innerHTML = "";
@@ -107,7 +128,7 @@ async function listarArchivos() {
   data.forEach(async (archivo) => {
     const { data: signedUrlData, error: signedUrlError } = await client.storage
       .from("tareas")
-      .createSignedUrl(`${user.id}/${archivo.name}`, 60); // Corrección aquí
+      .createSignedUrl(`${user.id}/${archivo.name}`, 60);
 
     if (signedUrlError) {
       console.error("Error al generar URL firmada:", signedUrlError.message);
@@ -115,7 +136,6 @@ async function listarArchivos() {
     }
 
     const publicUrl = signedUrlData.signedUrl;
-
     const item = document.createElement("li");
 
     const esImagen = archivo.name.match(/\.(jpg|jpeg|png|gif)$/i);
@@ -134,7 +154,7 @@ async function listarArchivos() {
         <a href="${publicUrl}" target="_blank">Ver PDF</a>
       `;
     } else {
-      item.innerHTML = `<a href="${publicUrl}" target="_blank">${archivo.name}</a>`; // Corrección aquí
+      item.innerHTML = `<a href="${publicUrl}" target="_blank">${archivo.name}</a>`;
     }
 
     lista.appendChild(item);
@@ -152,5 +172,34 @@ async function cerrarSesion() {
     localStorage.removeItem("token");
     alert("Sesión cerrada.");
     window.location.href = "index.html";
+  }
+}
+
+// Función para seleccionar estudiante para actualizar
+function seleccionarEstudiante(estudiante) {
+  document.getElementById("estudiante-id").value = estudiante.id;
+  document.getElementById("nuevo-nombre").value = estudiante.nombre;
+  document.getElementById("nuevo-correo").value = estudiante.correo;
+  document.getElementById("nueva-clase").value = estudiante.clase;
+}
+
+// Función para actualizar estudiante
+async function actualizarEstudiante() {
+  const id = document.getElementById("estudiante-id").value;
+  const nuevoNombre = document.getElementById("nuevo-nombre").value;
+  const nuevoCorreo = document.getElementById("nuevo-correo").value;
+  const nuevaClase = document.getElementById("nueva-clase").value;
+
+  const { error } = await client.from("estudiantes").update({
+    nombre: nuevoNombre,
+    correo: nuevoCorreo,
+    clase: nuevaClase,
+  }).eq("id", id);
+
+  if (error) {
+    alert("Error al actualizar: " + error.message);
+  } else {
+    alert("Estudiante actualizado");
+    cargarEstudiantes();
   }
 }

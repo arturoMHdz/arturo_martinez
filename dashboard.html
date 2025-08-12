@@ -10,7 +10,7 @@
   <div class="container">
 
     <h1>Panel de Estudiantes</h1>
-<button onclick="cerrarSesion()" class="cerrar-btn">Cerrar sesión</button>
+    <button onclick="cerrarSesion()" class="cerrar-btn">Cerrar sesión</button>
   
     <section class="card">
       <h2>Registrar estudiante</h2>
@@ -20,10 +20,18 @@
       <button onclick="agregarEstudiante()">Agregar</button>
     </section>
 
-   
     <section class="card">
       <h2>Lista de estudiantes</h2>
       <ul id="lista-estudiantes"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Actualizar estudiante</h2>
+      <input type="hidden" id="estudiante-id" />
+      <input type="text" id="nuevo-nombre" placeholder="Nuevo nombre" />
+      <input type="email" id="nuevo-correo" placeholder="Nuevo correo" />
+      <input type="text" id="nueva-clase" placeholder="Nueva clase" />
+      <button onclick="actualizarEstudiante()">Actualizar</button>
     </section>
 
     <section class="card">
@@ -40,7 +48,80 @@
       <ul id="lista-archivos"></ul>
     </section>
 
-    </div>
+  </div>
   <script src="js/dashboard.js"></script>
+  <script>
+    // Función para agregar un estudiante
+    function agregarEstudiante() {
+      const nombre = document.getElementById('nombre').value;
+      const correo = document.getElementById('correo').value;
+      const clase = document.getElementById('clase').value;
+
+      // Lógica para agregar el estudiante (ejemplo con Supabase)
+      // Supongamos que tienes una función para agregar estudiantes en tu base de datos
+
+      // Actualiza la lista de estudiantes
+      cargarEstudiantes();
+    }
+
+    // Función para cargar estudiantes
+    function cargarEstudiantes() {
+      // Lógica para obtener estudiantes de la base de datos
+      const listaEstudiantes = document.getElementById('lista-estudiantes');
+      listaEstudiantes.innerHTML = ''; // Limpiar la lista
+
+      // Supongamos que tienes un arreglo de estudiantes
+      const estudiantes = []; // Aquí deberías obtener los estudiantes de tu base de datos
+
+      estudiantes.forEach(estudiante => {
+        const li = document.createElement('li');
+        li.textContent = `${estudiante.nombre} - ${estudiante.correo} - ${estudiante.clase}`;
+        li.setAttribute('data-id', estudiante.id); // Guardar el ID del estudiante
+
+        // Botón para actualizar
+        const btnActualizar = document.createElement('button');
+        btnActualizar.textContent = 'Actualizar';
+        btnActualizar.onclick = () => seleccionarEstudiante(estudiante);
+        li.appendChild(btnActualizar);
+
+        // Botón para eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.onclick = () => eliminarEstudiante(estudiante.id);
+        li.appendChild(btnEliminar);
+
+        listaEstudiantes.appendChild(li);
+      });
+    }
+
+    // Función para seleccionar un estudiante para actualizar
+    function seleccionarEstudiante(estudiante) {
+      document.getElementById('estudiante-id').value = estudiante.id;
+      document.getElementById('nuevo-nombre').value = estudiante.nombre;
+      document.getElementById('nuevo-correo').value = estudiante.correo;
+      document.getElementById('nueva-clase').value = estudiante.clase;
+    }
+
+    // Función para actualizar un estudiante
+    function actualizarEstudiante() {
+      const id = document.getElementById('estudiante-id').value;
+      const nuevoNombre = document.getElementById('nuevo-nombre').value;
+      const nuevoCorreo = document.getElementById('nuevo-correo').value;
+      const nuevaClase = document.getElementById('nueva-clase').value;
+
+      // Lógica para actualizar el estudiante en la base de datos
+
+      // Actualiza la lista de estudiantes
+      cargarEstudiantes();
+    }
+
+    // Función para eliminar un estudiante
+    function eliminarEstudiante(id) {
+      // Lógica para eliminar el estudiante de la base de datos
+
+      // Actualiza la lista de estudiantes
+      cargarEstudiantes();
+    }
+  </script>
 </body>
 </html>
