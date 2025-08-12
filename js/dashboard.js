@@ -90,7 +90,7 @@ async function subirArchivo() {
   }
 
   const nombreRuta = `${user.id}/${archivo.name}`;
-  const { data, error } = await client.storage
+  const { error } = await client.storage
     .from("tareas")
     .upload(nombreRuta, archivo, {
       cacheControl: "3600",
@@ -159,6 +159,39 @@ async function listarArchivos() {
 
     lista.appendChild(item);
   });
+}
+
+async function vaciarArchivos() {
+  const { data: { user }, error: userError } = await client.auth.getUser();
+
+  if (userError || !user) {
+    alert("Sesión no válida.");
+    return;
+  }
+
+  // Listar los archivos del usuario
+  const { data: archivos, error: listarError } = await client.storage
+    .from("tareas")
+    .list(user.id);
+
+  if (listarError) {
+    alert("Error al listar archivos: " + listarError.message);
+    return;
+  }
+
+  // Eliminar cada archivo encontrado
+  for (const archivo of archivos) {
+    const { error: eliminarError } = await client.storage
+      .from("tareas")
+      .remove([`${user.id}/${archivo.name}`]);
+
+    if (eliminarError) {
+      alert("Error al eliminar archivo " + archivo.name + ": " + eliminarError.message);
+    }
+  }
+
+  alert("Todos los archivos han sido eliminados.");
+  listarArchivos(); // Actualizar la lista de archivos después de vaciar
 }
 
 listarArchivos();

@@ -48,79 +48,251 @@
       <ul id="lista-archivos"></ul>
     </section>
 
+    <section class="card">
+      <h2>Vaciar archivos subidos</h2>
+      <button onclick="vaciarArchivos()">Vaciar todos los archivos</button>
+    </section>
+
   </div>
   <script src="js/dashboard.js"></script>
   <script>
-    // Función para agregar un estudiante
-    function agregarEstudiante() {
-      const nombre = document.getElementById('nombre').value;
-      const correo = document.getElementById('correo').value;
-      const clase = document.getElementById('clase').value;
+    const SUPABASE_URL = "https://cgtdtctbkqlrewoembvu.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNndGR0Y3Ria3FscmV3b2VtYnZ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1MDUwMjgsImV4cCI6MjA3MDA4MTAyOH0.e4LHs20O52FBrw8VLNOP9pjBUcRNpQPgsOwGQUaUOvU";
 
-      // Lógica para agregar el estudiante (ejemplo con Supabase)
-      // Supongamos que tienes una función para agregar estudiantes en tu base de datos
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      // Actualiza la lista de estudiantes
-      cargarEstudiantes();
+    async function agregarEstudiante() {
+      const nombre = document.getElementById("nombre").value;
+      const correo = document.getElementById("correo").value;
+      const clase = document.getElementById("clase").value;
+
+      const { data: { user }, error: userError } = await client.auth.getUser();
+
+      if (userError || !user) {
+        alert("No estás autenticado.");
+        return;
+      }
+
+      const { error } = await client.from("estudiantes").insert({
+        nombre,
+        correo,
+        clase,
+        user_id: user.id,
+      });
+
+      if (error) {
+        alert("Error al agregar: " + error.message);
+      } else {
+        alert("Estudiante agregado");
+        cargarEstudiantes();
+      }
     }
 
-    // Función para cargar estudiantes
-    function cargarEstudiantes() {
-      // Lógica para obtener estudiantes de la base de datos
-      const listaEstudiantes = document.getElementById('lista-estudiantes');
-      listaEstudiantes.innerHTML = ''; // Limpiar la lista
+    async function cargarEstudiantes() {
+      const { data, error } = await client
+        .from("estudiantes")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      // Supongamos que tienes un arreglo de estudiantes
-      const estudiantes = []; // Aquí deberías obtener los estudiantes de tu base de datos
+      if (error) {
+        alert("Error al cargar estudiantes: " + error.message);
+        return;
+      }
 
-      estudiantes.forEach(estudiante => {
-        const li = document.createElement('li');
-        li.textContent = `${estudiante.nombre} - ${estudiante.correo} - ${estudiante.clase}`;
-        li.setAttribute('data-id', estudiante.id); // Guardar el ID del estudiante
+      const lista = document.getElementById("lista-estudiantes");
+      lista.innerHTML = "";
+      data.forEach((est) => {
+        const item = document.createElement("li");
+        item.textContent = `${est.nombre} (${est.clase})`;
 
-        // Botón para actualizar
-        const btnActualizar = document.createElement('button');
-        btnActualizar.textContent = 'Actualizar';
-        btnActualizar.onclick = () => seleccionarEstudiante(estudiante);
-        li.appendChild(btnActualizar);
+        // Botón de actualizar
+        const btnActualizar = document.createElement("button");
+        btnActualizar.textContent = "Actualizar";
+        btnActualizar.onclick = () => seleccionarEstudiante(est);
+        item.appendChild(btnActualizar);
 
-        // Botón para eliminar
-        const btnEliminar = document.createElement('button');
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.onclick = () => eliminarEstudiante(estudiante.id);
-        li.appendChild(btnEliminar);
+        // Botón de eliminar
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "Eliminar";
+        btnEliminar.onclick = () => eliminarEstudiante(est.id);
+        item.appendChild(btnEliminar);
 
-        listaEstudiantes.appendChild(li);
+        lista.appendChild(item);
       });
     }
 
-    // Función para seleccionar un estudiante para actualizar
+    async function eliminarEstudiante(id) {
+      const { error } = await client.from("estudiantes").delete().eq("id", id);
+      if (error) {
+        alert("Error al eliminar: " + error.message);
+      } else {
+        alert("Estudiante eliminado");
+        cargarEstudiantes();
+      }
+    }
+
+    async function subirArchivo() {
+      const archivoInput = document.getElementById("archivo");
+      const archivo = archivoInput.files[0];
+
+      if (!archivo) {
+        alert("Selecciona un archivo primero.");
+        return;
+      }
+
+      const { data: { user }, error: userError } = await client.auth.getUser();
+
+      if (userError || !user) {
+        alert("Sesión no válida.");
+        return;
+      }
+
+      const nombreRuta = `${user.id}/${archivo.name}`;
+      const { data, error } = await client.storage
+        .from("tareas")
+        .upload(nombreRuta, archivo, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) {
+        alert("Error al subir: " + error.message);
+      } else {
+        alert("Archivo subido correctamente.");
+        listarArchivos();
+      }
+    }
+
+    async function listarArchivos() {
+      const { data: { user }, error: userError } = await client.auth.getUser();
+
+      if (userError || !user) {
+        alert("Sesión no válida.");
+        return;
+      }
+
+      const { data, error } = await client.storage
+        .from("tareas")
+        .list(user.id, { limit: 20 });
+
+      const lista = document.getElementById("lista-archivos");
+      lista.innerHTML = "";
+
+      if (error) {
+        lista.innerHTML = "<li>Error al listar archivos</li>";
+        return;
+      }
+
+      data.forEach(async (archivo) => {
+        const { data: signedUrlData, error: signedUrlError } = await client.storage
+          .from("tareas")
+          .createSignedUrl(`${user.id}/${archivo.name}`, 60);
+
+        if (signedUrlError) {
+          console.error("Error al generar URL firmada:", signedUrlError.message);
+          return;
+        }
+
+        const publicUrl = signedUrlData.signedUrl;
+        const item = document.createElement("li");
+
+        const esImagen = archivo.name.match(/\.(jpg|jpeg|png|gif)$/i);
+        const esPDF = archivo.name.match(/\.pdf$/i);
+
+        if (esImagen) {
+          item.innerHTML = `
+            <strong>${archivo.name}</strong><br>
+            <a href="${publicUrl}" target="_blank">
+              <img src="${publicUrl}" width="150" style="border:1px solid #ccc; margin:5px;" />
+            </a>
+          `;
+        } else if (esPDF) {
+          item.innerHTML = `
+            <strong>${archivo.name}</strong><br>
+            <a href="${publicUrl}" target="_blank">Ver PDF</a>
+          `;
+        } else {
+          item.innerHTML = `<a href="${publicUrl}" target="_blank">${archivo.name}</a>`;
+        }
+
+        lista.appendChild(item);
+      });
+    }
+
+    async function vaciarArchivos() {
+      const { data: { user }, error: userError } = await client.auth.getUser();
+
+      if (userError || !user) {
+        alert("Sesión no válida.");
+        return;
+      }
+
+      // Listar los archivos del usuario
+      const { data: archivos, error: listarError } = await client.storage
+        .from("tareas")
+        .list(user.id);
+
+      if (listarError) {
+        alert("Error al listar archivos: " + listarError.message);
+        return;
+      }
+
+      // Eliminar cada archivo encontrado
+      for (const archivo of archivos) {
+        const { error: eliminarError } = await client.storage
+          .from("tareas")
+          .remove([`${user.id}/${archivo.name}`]);
+
+        if (eliminarError) {
+          alert("Error al eliminar archivo " + archivo.name + ": " + eliminarError.message);
+        }
+      }
+
+      alert("Todos los archivos han sido eliminados.");
+      listarArchivos(); // Actualizar la lista de archivos después de vaciar
+    }
+
+    listarArchivos();
+
+    async function cerrarSesion() {
+      const { error } = await client.auth.signOut();
+
+      if (error) {
+        alert("Error al cerrar sesión: " + error.message);
+      } else {
+        localStorage.removeItem("token");
+        alert("Sesión cerrada.");
+        window.location.href = "index.html";
+      }
+    }
+
+    // Función para seleccionar estudiante para actualizar
     function seleccionarEstudiante(estudiante) {
-      document.getElementById('estudiante-id').value = estudiante.id;
-      document.getElementById('nuevo-nombre').value = estudiante.nombre;
-      document.getElementById('nuevo-correo').value = estudiante.correo;
-      document.getElementById('nueva-clase').value = estudiante.clase;
+      document.getElementById("estudiante-id").value = estudiante.id;
+      document.getElementById("nuevo-nombre").value = estudiante.nombre;
+      document.getElementById("nuevo-correo").value = estudiante.correo;
+      document.getElementById("nueva-clase").value = estudiante.clase;
     }
 
-    // Función para actualizar un estudiante
-    function actualizarEstudiante() {
-      const id = document.getElementById('estudiante-id').value;
-      const nuevoNombre = document.getElementById('nuevo-nombre').value;
-      const nuevoCorreo = document.getElementById('nuevo-correo').value;
-      const nuevaClase = document.getElementById('nueva-clase').value;
+    // Función para actualizar estudiante
+    async function actualizarEstudiante() {
+      const id = document.getElementById("estudiante-id").value;
+      const nuevoNombre = document.getElementById("nuevo-nombre").value;
+      const nuevoCorreo = document.getElementById("nuevo-correo").value;
+      const nuevaClase = document.getElementById("nueva-clase").value;
 
-      // Lógica para actualizar el estudiante en la base de datos
+      const { error } = await client.from("estudiantes").update({
+        nombre: nuevoNombre,
+        correo: nuevoCorreo,
+        clase: nuevaClase,
+      }).eq("id", id);
 
-      // Actualiza la lista de estudiantes
-      cargarEstudiantes();
-    }
-
-    // Función para eliminar un estudiante
-    function eliminarEstudiante(id) {
-      // Lógica para eliminar el estudiante de la base de datos
-
-      // Actualiza la lista de estudiantes
-      cargarEstudiantes();
+      if (error) {
+        alert("Error al actualizar: " + error.message);
+      } else {
+        alert("Estudiante actualizado");
+        cargarEstudiantes();
+      }
     }
   </script>
 </body>
